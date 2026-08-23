@@ -9,6 +9,31 @@ la situación que la provocó, y a consultar la bitácora completa.
 La taxonomía y los colores vienen de la rueda de emociones de Casa Therapévo; las
 definiciones se apoyan en el Diccionario de la lengua española (RAE).
 
+## Por qué una rueda
+
+La estructura del centro viene de la **Teoría de las Emociones Básicas de Paul Ekman**,
+que sostiene que existe un conjunto reducido de emociones universales, reconocibles por
+su expresión facial en cualquier cultura. Las seis familias del núcleo —alegría,
+tristeza, enojo, miedo, asco y sorpresa— son justamente ese conjunto.
+
+La forma circular viene de la **Rueda de las Emociones de Robert Plutchik**, que dispone
+las emociones en un círculo donde unas pocas primarias se despliegan hacia afuera en
+estados afectivos más complejos: por variación de intensidad (de *irritación* a *ira* a
+*furia*) o por combinación de dos primarias en lo que Plutchik llamó *díadas*. Dos de
+ellas están en esta misma rueda: **asco + enojo = desprecio**, y **anticipación +
+alegría = optimismo**.
+
+El objetivo práctico es dar vocabulario. "Me siento mal" no distingue entre *desilusión*,
+*impotencia* y *saturación*, y las tres piden respuestas distintas. Nombrar con precisión
+lo que se siente —granularidad emocional— es lo que vuelve útil una bitácora: al releerla
+aparecen patrones que un vocabulario grueso esconde.
+
+Conviene aclarar que esta rueda no reproduce literalmente ninguno de los dos modelos.
+Plutchik trabaja con ocho primarias —incluye *confianza* y *anticipación*— y ordena sus
+anillos por intensidad decreciente hacia afuera. Aquí las familias son las seis de Ekman
+y los dos anillos exteriores son matices, no una escala: en la familia *enojo*, *furia*
+está en el anillo exterior y es más intensa que *enojo*, no menos.
+
 ## Requisitos
 
 - Android Studio 2026.1 o posterior (trae el JDK que necesita el proyecto)
