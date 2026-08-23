@@ -1,0 +1,30 @@
+rules_version = '2';
+
+// The journal is personal. Every document lives under the signed-in user's own
+// subtree and nobody else — authenticated or not — can read or write it.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+
+      match /journalEntries/{entryId} {
+        allow read, delete: if request.auth != null && request.auth.uid == userId;
+
+        allow create, update: if request.auth != null
+          && request.auth.uid == userId
+          && request.resource.data.keys().hasOnly(
+               ['date', 'emotionIds', 'customEmotion', 'situation', 'createdAt', 'updatedAt'])
+          && request.resource.data.date is int
+          && request.resource.data.updatedAt is int
+          && request.resource.data.situation is string
+          && request.resource.data.situation.size() <= 5000;
+      }
+    }
+
+    // Anything not matched above is denied.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
