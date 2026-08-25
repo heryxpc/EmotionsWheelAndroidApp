@@ -6,8 +6,8 @@ Every family holds one core emotion plus a middle ring and an outer ring of seve
 emotions each, also listed clockwise. The CSV is the source of truth so the wording
 can be edited in a spreadsheet; this script only validates it and reshapes it.
 
-Expected columns (matched ignoring case and accents; the Spanish names the app's
-own journal CSV uses are accepted too):
+Expected columns (matched ignoring case and accents; the Spanish names the app's own
+journal CSV uses are accepted too):
 
     family      the family's own core emotion: sorpresa, enojo, alegria,
                 miedo, tristeza or asco
@@ -15,6 +15,8 @@ own journal CSV uses are accepted too):
     position    0..6 clockwise within the ring; always 0 for the core
     emotion     the word shown on the wheel
     definition  one or two lines, meant to tell sibling emotions apart
+
+Emotion names and definitions stay in Spanish: they are the content of the wheel.
 
 Usage:
     python3 tools/build_catalog.py [CSV] [-o JSON]
@@ -35,6 +37,7 @@ DEFAULT_SOURCE = REPO_ROOT / "data" / "emotions-wheel.csv"
 DEFAULT_OUTPUT = REPO_ROOT / "app" / "src" / "main" / "assets" / "emotions.json"
 
 CORE, MIDDLE, OUTER = 1, 2, 3
+RING_NAMES = {CORE: "core", MIDDLE: "middle ring", OUTER: "outer ring"}
 SECTORS_PER_RING = 7
 MAX_DEFINITION = 200
 
@@ -74,7 +77,7 @@ def slugify(label: str) -> str:
 
 
 def read_rows(source: pathlib.Path) -> list[dict]:
-    """Reads the CSV into normalized rows, reporting every problem it can see."""
+    """Reads the CSV into normalized rows, naming the offending line on any problem."""
     with source.open(encoding="utf-8-sig", newline="") as handle:
         reader = csv.DictReader(handle)
         headers = {}
@@ -84,7 +87,7 @@ def read_rows(source: pathlib.Path) -> list[dict]:
         missing = [column for column in COLUMNS if column not in headers]
         if missing:
             raise click.ClickException(
-                f"{source}: faltan columnas {missing}; encontré {reader.fieldnames}"
+                f"{source}: missing columns {missing}; found {reader.fieldnames}"
             )
 
         rows = []
@@ -93,12 +96,11 @@ def read_rows(source: pathlib.Path) -> list[dict]:
             if not any(values.values()):
                 continue
 
-            family_key = strip_accents(values["family"])
-            family = FAMILY_IDS.get(family_key)
+            family = FAMILY_IDS.get(strip_accents(values["family"]))
             if family is None:
                 raise click.ClickException(
-                    f"{source}:{line}: familia desconocida '{values['familia']}'; "
-                    f"esperaba una de {sorted(FAMILY_IDS)}"
+                    f"{source}:{line}: unknown family '{values['family']}'; "
+                    f"expected one of {sorted(FAMILY_IDS)}"
                 )
 
             try:
@@ -106,16 +108,16 @@ def read_rows(source: pathlib.Path) -> list[dict]:
                 index = int(values["position"])
             except ValueError as error:
                 raise click.ClickException(
-                    f"{source}:{line}: ring y position deben ser números ({error})"
+                    f"{source}:{line}: ring and position must be numbers ({error})"
                 ) from error
 
-            if level not in (CORE, MIDDLE, OUTER):
-                raise click.ClickException(f"{source}:{line}: ring {level} fuera de 1..3")
+            if level not in RING_NAMES:
+                raise click.ClickException(f"{source}:{line}: ring {level} is not 1, 2 or 3")
             if not values["emotion"]:
-                raise click.ClickException(f"{source}:{line}: falta la emoción")
+                raise click.ClickException(f"{source}:{line}: no emotion")
             if not values["definition"]:
                 raise click.ClickException(
-                    f"{source}:{line}: '{values['emocion']}' no tiene definición"
+                    f"{source}:{line}: '{values['emotion']}' has no definition"
                 )
 
             rows.append(
@@ -138,34 +140,39 @@ def validate(rows: list[dict], source: pathlib.Path) -> None:
 
     for family in FAMILY_ORDER:
         members = [row for row in rows if row["family"] == family]
-        by_level = Counter(row["level"] for row in members)
-        if by_level[CORE] != 1:
-            problems.append(f"{family}: {by_level[CORE]} emociones en el núcleo, esperaba 1")
-        for level, name in ((MIDDLE, "anillo medio"), (OUTER, "anillo exterior")):
+        cores = sum(1 for row in members if row["level"] == CORE)
+        if cores != 1:
+            problems.append(f"{family}: {cores} core emotions, expected exactly 1")
+        for level in (MIDDLE, OUTER):
             ring = sorted(row["index"] for row in members if row["level"] == level)
             if ring != list(range(SECTORS_PER_RING)):
-                problems.append(f"{family}, {name}: posiciones {ring}, esperaba 0..6")
+                problems.append(
+                    f"{family}, {RING_NAMES[level]}: positions {ring}, expected 0..6"
+                )
 
     unexpected = {row["family"] for row in rows} - set(FAMILY_ORDER)
     if unexpected:
-        problems.append(f"familias no reconocidas: {sorted(unexpected)}")
+        problems.append(f"unrecognized families: {sorted(unexpected)}")
 
     duplicates = [id_ for id_, n in Counter(row["id"] for row in rows).items() if n > 1]
     if duplicates:
-        problems.append(f"ids repetidos: {sorted(duplicates)}")
+        problems.append(f"duplicate ids: {sorted(duplicates)}")
 
     for row in rows:
         if not row["id"].replace(" ", "").isalpha():
-            problems.append(f"línea {row['line']}: '{row['label']}' produce el id '{row['id']}'")
+            problems.append(
+                f"line {row['line']}: '{row['label']}' yields the id '{row['id']}', "
+                f"which is not plain letters"
+            )
         if len(row["definition"]) > MAX_DEFINITION:
             problems.append(
-                f"línea {row['line']}: la definición de '{row['label']}' tiene "
-                f"{len(row['definition'])} caracteres (máximo {MAX_DEFINITION})"
+                f"line {row['line']}: the definition of '{row['label']}' is "
+                f"{len(row['definition'])} characters (limit {MAX_DEFINITION})"
             )
 
     if problems:
         listing = "\n".join(f"  - {problem}" for problem in problems)
-        raise click.ClickException(f"{source} no describe una rueda válida:\n{listing}")
+        raise click.ClickException(f"{source} does not describe a valid wheel:\n{listing}")
 
 
 def order_key(row: dict) -> tuple[int, int, int]:
@@ -184,21 +191,17 @@ def order_key(row: dict) -> tuple[int, int, int]:
     default=DEFAULT_OUTPUT,
     show_default=str(DEFAULT_OUTPUT.relative_to(REPO_ROOT)),
     type=click.Path(dir_okay=False, path_type=pathlib.Path),
-    help="Dónde escribir el JSON del catálogo.",
+    help="Where to write the catalog JSON.",
 )
-@click.option(
-    "--check",
-    is_flag=True,
-    help="Solo valida el CSV; no escribe nada.",
-)
+@click.option("--check", is_flag=True, help="Validate the CSV without writing anything.")
 def main(source: pathlib.Path | None, output: pathlib.Path, check: bool) -> None:
-    """Convierte el CSV de la rueda en el catálogo que lee la app.
+    """Turn the wheel's CSV into the catalog the app reads.
 
-    SOURCE es el CSV a importar; por omisión data/emotions-wheel.csv.
+    SOURCE is the CSV to import; defaults to data/emotions-wheel.csv.
     """
     source = source or DEFAULT_SOURCE
     if not source.exists():
-        raise click.ClickException(f"no encuentro el CSV: {source}")
+        raise click.ClickException(f"no such CSV: {source}")
 
     rows = read_rows(source)
     validate(rows, source)
@@ -209,11 +212,13 @@ def main(source: pathlib.Path | None, output: pathlib.Path, check: bool) -> None
         for row in rows
     ]
 
-    click.echo(f"{source}: {len(emotions)} emociones en {len(FAMILY_ORDER)} familias")
-    click.echo(f"  definición más larga: {max(len(e['definition']) for e in emotions)} caracteres")
+    click.echo(f"{source}: {len(emotions)} emotions across {len(FAMILY_ORDER)} families")
+    click.echo(
+        f"  longest definition: {max(len(e['definition']) for e in emotions)} characters"
+    )
 
     if check:
-        click.echo("--check: el CSV es válido, no escribí nada")
+        click.echo("--check: the CSV is valid, nothing written")
         return
 
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -221,7 +226,7 @@ def main(source: pathlib.Path | None, output: pathlib.Path, check: bool) -> None
         json.dumps({"version": 1, "emotions": emotions}, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
-    click.echo(f"escrito {output}")
+    click.echo(f"wrote {output}")
 
 
 if __name__ == "__main__":
