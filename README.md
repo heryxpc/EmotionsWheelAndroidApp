@@ -34,6 +34,18 @@ anillos por intensidad decreciente hacia afuera. Aquí las familias son las seis
 y los dos anillos exteriores son matices, no una escala: en la familia *enojo*, *furia*
 está en el anillo exterior y es más intensa que *enojo*, no menos.
 
+## Gestos de la ruleta
+
+| Gesto | Qué hace |
+|---|---|
+| Tocar | Elige la emoción y muestra su definición |
+| Arrastrar con un dedo | Gira la rueda (en reposo) o la desplaza (acercada) |
+| Pellizcar con dos dedos | Acerca hasta 4x y desplaza; el anillo medio es el que más lo agradece, porque tiene las palabras más largas |
+| Botón ⤢ | Vuelve la rueda a su posición y tamaño original |
+
+El zoom se aplica al dibujar, no sobre un mapa de bits ya trazado, así que las letras se
+vuelven a componer al tamaño nuevo y siguen nítidas hasta el máximo.
+
 ## Requisitos
 
 - Android Studio 2026.1 o posterior (trae el JDK que necesita el proyecto)

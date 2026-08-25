@@ -89,6 +89,59 @@ class WheelGeometryTest {
         )
     }
 
+    /**
+     * Mirrors what EmotionWheel does before hit-testing a touch: the finger lands in
+     * view coordinates, the sectors live in the wheel's own, and the zoom sits between
+     * the two. Getting this backwards picks a neighbouring word, which is exactly the
+     * kind of error a user would blame on their aim.
+     */
+    private fun unzoom(position: Offset, scale: Float, pan: Offset): Offset =
+        center + (position - center - pan) / scale
+
+    @Test
+    fun `undoing the zoom lands on the same sector the user aimed at`() {
+        val aimed = point(312.9f, 0.505f) // saturación, in the middle ring of ASCO
+        val expected = WheelGeometry.sectorAt(aimed, center, radius, rotation = 0f)
+        assertEquals(EmotionFamily.DISGUST, expected?.family)
+        assertEquals(1, expected?.index)
+
+        // Zoomed 2.5x the same word is drawn somewhere else on screen; touching it
+        // there has to resolve to the same sector.
+        val scale = 2.5f
+        val pan = Offset(-120f, 60f)
+        val onScreen = center + (aimed - center) * scale + pan
+
+        val resolved = WheelGeometry.sectorAt(
+            unzoom(onScreen, scale, pan), center, radius, rotation = 0f,
+        )
+        assertEquals(expected, resolved)
+    }
+
+    @Test
+    fun `at rest the inverse transform changes nothing`() {
+        val spot = point(150f, 0.8f)
+        assertEquals(spot, unzoom(spot, scale = 1f, pan = Offset.Zero))
+    }
+
+    @Test
+    fun `zoom and rotation compose without interfering`() {
+        val spot = point(30f, 0.5f)
+        val scale = 3f
+        val pan = Offset(200f, -40f)
+        val onScreen = center + (spot - center) * scale + pan
+
+        // Same touch, wheel turned a sixth of a turn: the neighbouring family answers,
+        // exactly as it does at 1x.
+        assertEquals(
+            EmotionFamily.SURPRISE,
+            WheelGeometry.sectorAt(unzoom(onScreen, scale, pan), center, radius, 0f)?.family,
+        )
+        assertEquals(
+            EmotionFamily.DISGUST,
+            WheelGeometry.sectorAt(unzoom(onScreen, scale, pan), center, radius, 60f)?.family,
+        )
+    }
+
     @Test
     fun `touches outside the wheel and in the gaps between rings select nothing`() {
         assertNull(WheelGeometry.sectorAt(point(30f, 1.4f), center, radius, rotation = 0f))

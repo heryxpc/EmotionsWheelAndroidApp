@@ -2,21 +2,36 @@ package com.emotionwheel.app.ui.wheel
 
 import android.graphics.Paint
 import android.graphics.Typeface
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.animate
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.calculatePan
+import androidx.compose.foundation.gestures.calculateZoom
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.ZoomOutMap
+import androidx.compose.material3.FilledTonalIconButton
+import androidx.compose.material3.Icon
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
@@ -24,15 +39,18 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.rotate
+import androidx.compose.ui.graphics.drawscope.withTransform
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import com.emotionwheel.app.R
 import com.emotionwheel.app.data.catalog.Emotion
@@ -136,6 +154,15 @@ fun EmotionWheel(
     val rotation = remember { Animatable(0f) }
     var isDragging by remember { mutableStateOf(false) }
 
+    // Magnification. The middle ring carries the longest words of the wheel
+    // ("deslumbramiento", "vulnerabilidad"), so its type is the smallest; being able
+    // to enlarge it is what makes that ring comfortable to read.
+    var scale by remember { mutableFloatStateOf(1f) }
+    var pan by remember { mutableStateOf(Offset.Zero) }
+    // Compared with a tolerance: pinching back to rest leaves sub-pixel leftovers, and
+    // an exact comparison would keep offering to reset a wheel that is already at rest.
+    val zoomed = scale > 1.02f || pan.getDistance() > 1f
+
     val labelPaint = remember {
         Paint().apply {
             isAntiAlias = true
@@ -153,7 +180,7 @@ fun EmotionWheel(
     // Announce the current pick to screen readers without redrawing anything.
     val description = stringResource(R.string.wheel_content_description)
 
-    BoxWithConstraints(modifier = modifier.aspectRatio(1f)) {
+    BoxWithConstraints(modifier = modifier.aspectRatio(1f).clipToBounds()) {
         val radiusPx = with(LocalDensity.current) { minOf(maxWidth, maxHeight).toPx() } / 2f
         val typography = remember(radiusPx, catalog) {
             computeRingTypography(catalog, radiusPx, labelPaint)
@@ -170,45 +197,70 @@ fun EmotionWheel(
                         val slop = viewConfiguration.touchSlop
 
                         var travelled = 0f
+                        // A gesture is a tap until it moves far enough to be a drag,
+                        // and becomes a two-finger transform the moment a second
+                        // finger lands. Once it is either of those, releasing must
+                        // not also select whatever is under the finger.
                         var dragging = false
+                        var transforming = false
                         var previousAngle = WheelGeometry.angleOf(down.position, center)
 
                         while (true) {
                             val event = awaitPointerEvent()
-                            val change = event.changes.firstOrNull { it.id == down.id } ?: break
+                            val pressed = event.changes.filter { it.pressed }
 
-                            if (!change.pressed) {
-                                if (!dragging) {
-                                    val radius = min(center.x, center.y)
-                                    val sector = WheelGeometry.sectorAt(
-                                        point = change.position,
+                            if (pressed.isEmpty()) {
+                                if (!dragging && !transforming) {
+                                    selectAt(
+                                        position = down.position,
                                         center = center,
-                                        radius = radius,
+                                        radius = min(center.x, center.y),
                                         rotation = rotation.value,
+                                        scale = scale,
+                                        pan = pan,
+                                        catalog = catalog,
+                                        haptics = haptics,
+                                        onSelect = onSelect,
                                     )
-                                    sector?.let {
-                                        val emotion = catalog.ring(it.family, it.level)
-                                            .getOrNull(it.index)
-                                            ?: catalog.core(it.family)
-                                        haptics.performHapticFeedback(HapticFeedbackType.LongPress)
-                                        onSelect(emotion)
-                                    }
-                                    change.consume()
                                 }
                                 isDragging = false
                                 break
                             }
 
+                            if (pressed.size >= 2) {
+                                transforming = true
+                                isDragging = true
+                                val next = (scale * event.calculateZoom())
+                                    .coerceIn(1f, MAX_SCALE)
+                                // Panning follows the midpoint between the fingers, so
+                                // the wheel tracks the hand rather than the screen.
+                                pan = clampPan(pan + event.calculatePan(), next, size)
+                                scale = next
+                                event.changes.forEach { it.consume() }
+                                continue
+                            }
+
+                            val change = pressed.first()
                             travelled += (change.position - change.previousPosition).getDistance()
-                            if (!dragging && travelled > slop) {
+                            if (!transforming && !dragging && travelled > slop) {
                                 dragging = true
                                 isDragging = true
                             }
                             if (dragging) {
-                                val angle = WheelGeometry.angleOf(change.position, center)
-                                val delta = shortestDelta(previousAngle, angle)
-                                previousAngle = angle
-                                scope.launch { rotation.snapTo(rotation.value + delta) }
+                                if (scale > 1f) {
+                                    // Zoomed in there is somewhere to go, so one finger
+                                    // moves the wheel around.
+                                    pan = clampPan(
+                                        pan + (change.position - change.previousPosition),
+                                        scale,
+                                        size,
+                                    )
+                                } else {
+                                    val angle = WheelGeometry.angleOf(change.position, center)
+                                    val delta = shortestDelta(previousAngle, angle)
+                                    previousAngle = angle
+                                    scope.launch { rotation.snapTo(rotation.value + delta) }
+                                }
                                 change.consume()
                             }
                         }
@@ -219,6 +271,13 @@ fun EmotionWheel(
             val radius = min(size.width, size.height) / 2f
             val selectionColor = Color.White
 
+            // Scaling here rather than in a graphics layer means the labels are
+            // re-rasterized at the zoomed size instead of being blown up, so they stay
+            // sharp all the way to 4x.
+            withTransform({
+                translate(pan.x, pan.y)
+                scale(scale, scale, pivot = center)
+            }) {
             rotate(degrees = rotation.value, pivot = center) {
                 WheelGeometry.families.forEach { family ->
                     val palette = family.palette
@@ -292,7 +351,23 @@ fun EmotionWheel(
                     }
                 }
             }
+            }
         }
+
+        ResetZoomButton(
+            visible = zoomed,
+            onReset = {
+                scope.launch {
+                    val fromScale = scale
+                    val fromPan = pan
+                    animate(initialValue = 1f, targetValue = 0f, animationSpec = tween(220)) { t, _ ->
+                        scale = 1f + (fromScale - 1f) * t
+                        pan = fromPan * t
+                    }
+                }
+            },
+            modifier = Modifier.align(Alignment.TopEnd),
+        )
     }
 
     // Ease the wheel back to rest once the user stops spinning it, so the labels
@@ -308,6 +383,59 @@ fun EmotionWheel(
 }
 
 private const val SETTLE_THRESHOLD_DEG = 12f
+
+/** Far enough that even the middle ring's longest words read comfortably. */
+private const val MAX_SCALE = 4f
+
+/**
+ * Keeps the magnified wheel covering the viewport, so it can never be dragged off to
+ * one side leaving empty space behind it.
+ */
+private fun clampPan(pan: Offset, scale: Float, size: IntSize): Offset {
+    val maxX = (scale - 1f) * size.width / 2f
+    val maxY = (scale - 1f) * size.height / 2f
+    return Offset(pan.x.coerceIn(-maxX, maxX), pan.y.coerceIn(-maxY, maxY))
+}
+
+/**
+ * Resolves a touch to an emotion, undoing the zoom first: the finger lands in view
+ * coordinates, while the sectors are laid out in the wheel's own.
+ */
+private fun selectAt(
+    position: Offset,
+    center: Offset,
+    radius: Float,
+    rotation: Float,
+    scale: Float,
+    pan: Offset,
+    catalog: EmotionCatalog,
+    haptics: HapticFeedback,
+    onSelect: (Emotion) -> Unit,
+) {
+    val inWheel = center + (position - center - pan) / scale
+    val sector = WheelGeometry.sectorAt(inWheel, center, radius, rotation) ?: return
+    val emotion = catalog.ring(sector.family, sector.level).getOrNull(sector.index)
+        ?: catalog.core(sector.family)
+    haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+    onSelect(emotion)
+}
+
+/** Only there once the wheel has been moved, and only to put it back. */
+@Composable
+private fun ResetZoomButton(
+    visible: Boolean,
+    onReset: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    AnimatedVisibility(visible = visible, modifier = modifier, enter = fadeIn(), exit = fadeOut()) {
+        FilledTonalIconButton(onClick = onReset, modifier = Modifier.padding(4.dp)) {
+            Icon(
+                imageVector = Icons.Default.ZoomOutMap,
+                contentDescription = stringResource(R.string.wheel_reset_zoom),
+            )
+        }
+    }
+}
 
 /** Signed shortest way from [from] to [to], so crossing twelve o'clock is not a 359 degree jump. */
 private fun shortestDelta(from: Float, to: Float): Float {

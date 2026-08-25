@@ -26,7 +26,7 @@
 
     <!-- Wheel screen -->
     <string name="wheel_title">¿Qué estás sintiendo?</string>
-    <string name="wheel_subtitle">Toca la rueda para explorar. Gírala para leer mejor.</string>
+    <string name="wheel_subtitle">Toca para elegir. Gírala con un dedo, acércala con dos.</string>
     <string name="wheel_search_hint">Buscar emoción…</string>
     <string name="wheel_search_empty">Ninguna emoción coincide con «%1$s»</string>
     <string name="wheel_hint_tap">Toca cualquier palabra de la rueda</string>
@@ -34,6 +34,7 @@
     <string name="wheel_action_dismiss">Ver otra</string>
     <string name="wheel_family_sheet_title">%1$s — 15 matices</string>
     <string name="wheel_content_description">Rueda de emociones con seis familias y noventa emociones</string>
+    <string name="wheel_reset_zoom">Restablecer zoom</string>
     <string name="wheel_selected_announcement">%1$s seleccionada</string>
 
     <!-- Entry screen -->
