@@ -83,9 +83,12 @@ app/src/main/
 └── java/com/emotionwheel/app/
     ├── data/                   # Room, catálogo, CSV, respaldo en la nube
     └── ui/                     # ruleta, registro, bitácora, ajustes
+data/
+└── emotions-wheel.csv          # las 90 emociones y definiciones, editable a mano
 tools/
-├── build_catalog.py            # genera emotions.json
-└── build_seed.py               # convierte el CSV original a journal_seed.json
+├── build_catalog.py            # emotions-wheel.csv -> emotions.json
+├── build_seed.py               # una bitácora en CSV -> journal_seed.json
+└── requirements.txt
 ```
 
 El código está en inglés; el contenido —emociones, definiciones, textos de UI— en
@@ -112,7 +115,41 @@ Sin `google-services.json` el proyecto compila y corre igual, con el respaldo ap
 
 ## Regenerar los datos
 
+Las dos fuentes son CSV, para poder editarlas en una hoja de cálculo. Los scripts que
+las convierten usan [click](https://click.palletsprojects.com/), así que necesitan un
+entorno virtual:
+
 ```bash
-python3 tools/build_catalog.py                       # emotions.json
-python3 tools/build_seed.py "ruta/al/Bitácora emociones.csv"   # journal_seed.json
+python3 -m venv .venv
+.venv/bin/pip install -r tools/requirements.txt
 ```
+
+**Catálogo de la rueda** — `data/emotions-wheel.csv`, con columnas
+`family,ring,position,emotion,definition`. La familia se nombra por su emoción del centro
+(*sorpresa*, *enojo*, *alegría*, *miedo*, *tristeza*, *asco*); el anillo es 1 para el
+núcleo, 2 para el medio y 3 para el exterior; la posición va de 0 a 6 en sentido horario.
+
+```bash
+.venv/bin/python tools/build_catalog.py                  # usa data/emotions-wheel.csv
+.venv/bin/python tools/build_catalog.py otra-rueda.csv
+.venv/bin/python tools/build_catalog.py --check          # solo valida
+```
+
+Valida que cada familia tenga un núcleo y dos anillos completos, que no haya ids
+repetidos y que ninguna definición pase de 200 caracteres. Si algo falla, dice en qué
+línea.
+
+**Bitácora de precarga** — cualquier CSV con columnas `fecha,emoción,evento`.
+
+```bash
+.venv/bin/python tools/build_seed.py "ruta/al/Bitácora emociones.csv"
+.venv/bin/python tools/build_seed.py bitacora.csv --check
+.venv/bin/python tools/build_seed.py bitacora.csv --strict   # falla si omite filas
+```
+
+Repara barras dobles en las fechas, separa las filas con varias emociones y guarda como
+texto libre lo que la rueda no nombra. **No corrige años**: una fila fechada en 2029 se
+importa en 2029, igual que hace el importador de la app; si el rango de fechas resulta
+sospechosamente amplio, lo avisa para que revises el CSV.
+
+Los dos aceptan `-h` para ver todas las opciones.

@@ -1,16 +1,23 @@
 #!/usr/bin/env python3
-"""Convert the hand-kept CSV journal into app/src/main/assets/journal_seed.json.
+"""Convert a hand-kept CSV journal into app/src/main/assets/journal_seed.json.
 
-The source CSV is messy in ways the app has to survive: header names carry
-trailing spaces, some rows name several emotions separated by slashes, a few
-dates have a doubled slash or a year that does not fit the sequence, and some
-labels carry stray asterisks. Every repair is reported on stdout so nothing is
-silently rewritten.
+The source is messy in ways the app has to survive: header names carry trailing
+spaces, some rows name several emotions separated by slashes, a few dates have a
+doubled slash, and some labels carry stray asterisks. Every repair is reported on
+stdout so nothing is silently rewritten, and dates are never moved to a different
+year — a row dated 2029 is imported as 2029 and merely flagged.
 
-Emotion names that exist on the wheel become ids; the rest are kept verbatim as
-a free-text emotion so no entry is lost.
+Emotion names that exist on the wheel become ids; the rest are kept verbatim as a
+free-text emotion so no entry is lost.
 
-Usage: python3 tools/build_seed.py [path/to/Bitacora emociones.csv]
+Expected columns (matched ignoring case, accents and stray spaces):
+
+    fecha    dd/mm/yyyy
+    emocion  one or more names, separated by "/" or ","
+    evento   what happened
+
+Usage:
+    python3 tools/build_seed.py [CSV] [-o JSON]
 """
 
 from __future__ import annotations
@@ -20,17 +27,25 @@ import hashlib
 import json
 import pathlib
 import re
-import sys
 import unicodedata
 from datetime import date
 
-# The journal covers August 2026. Years outside this range are typos in the source.
-EXPECTED_YEAR = 2026
-DEFAULT_CSV = pathlib.Path.home() / "Downloads" / "Bitácora emociones.csv"
+import click
+
+REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
+DEFAULT_SOURCE = pathlib.Path.home() / "Downloads" / "Bitácora emociones.csv"
+DEFAULT_OUTPUT = REPO_ROOT / "app" / "src" / "main" / "assets" / "journal_seed.json"
+DEFAULT_CATALOG = REPO_ROOT / "app" / "src" / "main" / "assets" / "emotions.json"
+
+COLUMNS = ("fecha", "emocion", "evento")
+
+# A journal spanning more than this is more likely to hold a mistyped year than to be
+# genuine, so the span is reported. It is never corrected.
+SUSPICIOUS_SPAN_DAYS = 365
 
 
-def slugify(label: str) -> str:
-    decomposed = unicodedata.normalize("NFD", label.strip().lower())
+def strip_accents(value: str) -> str:
+    decomposed = unicodedata.normalize("NFD", value.strip().lower())
     return "".join(c for c in decomposed if unicodedata.category(c) != "Mn")
 
 
@@ -39,29 +54,34 @@ def clean(value: str) -> str:
     return re.sub(r"\s+", " ", value.replace("*", " ")).strip()
 
 
-def parse_date(raw: str, repairs: list[str]) -> date:
+def parse_date(raw: str, line: int, repairs: list[str]) -> date | None:
     text = clean(raw)
+    if not text:
+        return None
+
     normalized = re.sub(r"/{2,}", "/", text)
     if normalized != text:
-        repairs.append(f"fecha '{text}' -> '{normalized}' (barra doble)")
+        repairs.append(f"línea {line}: fecha '{text}' -> '{normalized}' (barra doble)")
 
-    day, month, year = (int(part) for part in normalized.split("/"))
-    if year != EXPECTED_YEAR:
-        repairs.append(f"fecha '{normalized}' -> año {EXPECTED_YEAR} (fuera de la secuencia)")
-        year = EXPECTED_YEAR
-    return date(year, month, day)
+    parts = normalized.split("/")
+    if len(parts) != 3:
+        return None
+    try:
+        day, month, year = (int(part) for part in parts)
+        return date(year, month, day)
+    except ValueError:
+        return None
 
 
 def parse_emotions(raw: str, catalog: dict[str, str]) -> tuple[list[str], str | None]:
-    """Split a cell like 'impaciencia / hostilidad / desánimo' into wheel ids
+    """Splits a cell like 'impaciencia / hostilidad / desánimo' into wheel ids
     plus whatever could not be matched, kept as free text."""
-    parts = [clean(part) for part in re.split(r"[/,]", raw)]
     ids: list[str] = []
     unmatched: list[str] = []
-    for part in parts:
+    for part in (clean(part) for part in re.split(r"[/,]", raw)):
         if not part:
             continue
-        slug = slugify(part)
+        slug = strip_accents(part)
         if slug in catalog:
             if slug not in ids:
                 ids.append(slug)
@@ -71,52 +91,57 @@ def parse_emotions(raw: str, catalog: dict[str, str]) -> tuple[list[str], str | 
 
 
 def stable_id(entry_date: date, emotions: str, situation: str) -> str:
-    """Deterministic id so re-running the script never duplicates an entry."""
+    """Content-derived id, shaped like a UUID, so re-running never duplicates a row.
+    JournalCsv.stableId in the app uses the same recipe."""
     digest = hashlib.sha1(
         f"{entry_date.isoformat()}|{emotions}|{situation}".encode("utf-8")
     ).hexdigest()
     return f"{digest[:8]}-{digest[8:12]}-{digest[12:16]}-{digest[16:20]}-{digest[20:32]}"
 
 
-def main() -> None:
-    root = pathlib.Path(__file__).resolve().parent.parent
-    source = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else DEFAULT_CSV
-    if not source.exists():
-        sys.exit(f"CSV not found: {source}")
+def load_catalog(path: pathlib.Path) -> dict[str, str]:
+    if not path.exists():
+        raise click.ClickException(
+            f"no encuentro el catálogo {path}; corre antes tools/build_catalog.py"
+        )
+    data = json.loads(path.read_text(encoding="utf-8"))
+    return {emotion["id"]: emotion["label"] for emotion in data["emotions"]}
 
-    catalog_path = root / "app" / "src" / "main" / "assets" / "emotions.json"
-    if not catalog_path.exists():
-        sys.exit("emotions.json missing — run tools/build_catalog.py first")
-    catalog = {
-        emotion["id"]: emotion["label"]
-        for emotion in json.loads(catalog_path.read_text(encoding="utf-8"))["emotions"]
-    }
 
-    repairs: list[str] = []
-    unmatched_labels: set[str] = set()
+def read_entries(
+    source: pathlib.Path,
+    catalog: dict[str, str],
+    repairs: list[str],
+    skipped: list[str],
+    unmatched_labels: set[str],
+) -> list[dict]:
     entries: list[dict] = []
-
-    with source.open(encoding="utf-8", newline="") as handle:
+    with source.open(encoding="utf-8-sig", newline="") as handle:
         reader = csv.DictReader(handle)
-        # Header names in the source carry trailing spaces; map them by position.
-        fields = [name.strip() for name in (reader.fieldnames or [])]
-        if fields[:3] != ["fecha", "emoción", "evento"]:
-            sys.exit(f"unexpected CSV header: {reader.fieldnames}")
-        raw_fields = reader.fieldnames or []
+        headers = {strip_accents(name): name for name in (reader.fieldnames or [])}
+        missing = [column for column in COLUMNS if column not in headers]
+        if missing:
+            raise click.ClickException(
+                f"{source}: faltan columnas {missing}; encontré {reader.fieldnames}"
+            )
 
-        for row_number, row in enumerate(reader, start=2):
-            raw_date = (row.get(raw_fields[0]) or "").strip()
-            raw_emotion = (row.get(raw_fields[1]) or "").strip()
-            situation = clean(row.get(raw_fields[2]) or "")
-            if not raw_date and not raw_emotion and not situation:
+        for line, raw in enumerate(reader, start=2):
+            values = {column: (raw.get(headers[column]) or "").strip() for column in COLUMNS}
+            if not any(values.values()):
                 continue
 
-            entry_date = parse_date(raw_date, repairs)
-            ids, custom = parse_emotions(raw_emotion, catalog)
+            entry_date = parse_date(values["fecha"], line, repairs)
+            if entry_date is None:
+                skipped.append(f"línea {line}: fecha ilegible '{values['fecha']}'")
+                continue
+
+            situation = clean(values["evento"])
+            ids, custom = parse_emotions(values["emocion"], catalog)
+            if not ids and not custom:
+                skipped.append(f"línea {line}: sin emoción")
+                continue
             if custom:
                 unmatched_labels.update(part.strip() for part in custom.split(","))
-            if not ids and not custom:
-                sys.exit(f"row {row_number}: no emotion at all")
 
             entries.append(
                 {
@@ -127,27 +152,105 @@ def main() -> None:
                     "situation": situation,
                 }
             )
+    return entries
+
+
+@click.command(context_settings={"help_option_names": ["-h", "--help"]})
+@click.argument(
+    "source",
+    required=False,
+    type=click.Path(exists=True, dir_okay=False, path_type=pathlib.Path),
+)
+@click.option(
+    "-o",
+    "--output",
+    default=DEFAULT_OUTPUT,
+    show_default=str(DEFAULT_OUTPUT.relative_to(REPO_ROOT)),
+    type=click.Path(dir_okay=False, path_type=pathlib.Path),
+    help="Dónde escribir el JSON de precarga.",
+)
+@click.option(
+    "-c",
+    "--catalog",
+    default=DEFAULT_CATALOG,
+    show_default=str(DEFAULT_CATALOG.relative_to(REPO_ROOT)),
+    type=click.Path(dir_okay=False, path_type=pathlib.Path),
+    help="Catálogo contra el que se resuelven los nombres de emociones.",
+)
+@click.option(
+    "--strict",
+    is_flag=True,
+    help="Falla si alguna fila no se pudo leer, en vez de omitirla.",
+)
+@click.option(
+    "--check",
+    is_flag=True,
+    help="Solo lee y reporta; no escribe nada.",
+)
+def main(
+    source: pathlib.Path | None,
+    output: pathlib.Path,
+    catalog: pathlib.Path,
+    strict: bool,
+    check: bool,
+) -> None:
+    """Convierte una bitácora en CSV al JSON que la app precarga al primer arranque.
+
+    SOURCE es el CSV a importar; por omisión ~/Downloads/Bitácora emociones.csv.
+    """
+    source = source or DEFAULT_SOURCE
+    if not source.exists():
+        raise click.ClickException(f"no encuentro el CSV: {source}")
+
+    wheel = load_catalog(catalog)
+    repairs: list[str] = []
+    skipped: list[str] = []
+    unmatched_labels: set[str] = set()
+
+    entries = read_entries(source, wheel, repairs, skipped, unmatched_labels)
+    if not entries:
+        raise click.ClickException(f"{source}: no pude leer ninguna fila")
 
     entries.sort(key=lambda entry: entry["date"])
+    ids = [entry["id"] for entry in entries]
+    if len(set(ids)) != len(ids):
+        raise click.ClickException("dos filas son idénticas y colisionan en el mismo id")
 
-    ids_seen = [entry["id"] for entry in entries]
-    if len(set(ids_seen)) != len(ids_seen):
-        sys.exit("stable ids collided — two rows are byte-identical")
+    first = date.fromisoformat(entries[0]["date"])
+    last = date.fromisoformat(entries[-1]["date"])
+    multi = sum(1 for e in entries if len(e["emotionIds"]) > 1 or e["customEmotion"])
 
-    out = root / "app" / "src" / "main" / "assets" / "journal_seed.json"
-    out.write_text(
+    click.echo(f"{source}: {len(entries)} registros, {first} .. {last}")
+    click.echo(f"  {multi} con más de una emoción o con texto libre")
+    if unmatched_labels:
+        click.echo(
+            f"  fuera de la rueda ({len(unmatched_labels)}): {sorted(unmatched_labels)}"
+        )
+    for repair in repairs:
+        click.echo(f"  reparado: {repair}")
+    for problem in skipped:
+        click.echo(f"  omitido: {problem}", err=True)
+
+    if (last - first).days > SUSPICIOUS_SPAN_DAYS:
+        click.echo(
+            f"  aviso: la bitácora abarca {(last - first).days} días. Si no es lo que "
+            f"esperabas, revisa los años; este script ya no los corrige solo.",
+            err=True,
+        )
+
+    if skipped and strict:
+        raise click.ClickException(f"--strict: {len(skipped)} filas sin leer")
+
+    if check:
+        click.echo("--check: no escribí nada")
+        return
+
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(
         json.dumps({"version": 1, "entries": entries}, ensure_ascii=False, indent=2) + "\n",
         encoding="utf-8",
     )
-
-    multi = sum(1 for entry in entries if len(entry["emotionIds"]) > 1 or entry["customEmotion"])
-    print(f"wrote {out.relative_to(root)}")
-    print(f"  {len(entries)} entries, {entries[0]['date']} .. {entries[-1]['date']}")
-    print(f"  {multi} entries with more than one emotion or free text")
-    print(f"  emociones fuera de la ruleta ({len(unmatched_labels)}): {sorted(unmatched_labels)}")
-    print(f"  correcciones aplicadas ({len(repairs)}):")
-    for repair in repairs:
-        print(f"    - {repair}")
+    click.echo(f"escrito {output}")
 
 
 if __name__ == "__main__":
