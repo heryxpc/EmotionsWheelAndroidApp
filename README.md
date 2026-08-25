@@ -84,7 +84,8 @@ app/src/main/
     ├── data/                   # Room, catálogo, CSV, respaldo en la nube
     └── ui/                     # ruleta, registro, bitácora, ajustes
 data/
-└── emotions-wheel.csv          # las 90 emociones y definiciones, editable a mano
+├── emotions-wheel.csv          # las 90 emociones y definiciones, editable a mano
+└── journal-sample.csv          # bitácora de ejemplo, ficticia
 tools/
 ├── build_catalog.py            # emotions-wheel.csv -> emotions.json
 ├── build_seed.py               # una bitácora en CSV -> journal_seed.json
@@ -99,11 +100,21 @@ español.
 **Almacenamiento local (Room).** Toda la bitácora vive en SQLite en el teléfono.
 Funciona sin internet y sin cuentas.
 
-**Precarga.** Al primer arranque se cargan los 52 registros del CSV que llevabas a
-mano. `tools/build_seed.py` los normaliza: corrige fechas con doble barra y años fuera
-de la secuencia, separa las filas que nombran varias emociones, y guarda como texto
-libre las cuatro que no están en la rueda (*vergüenza*, *pena*, *lástima*,
-*indiferencia*).
+**Precarga.** Al primer arranque se cargan los registros de
+`app/src/main/assets/journal_seed.json`. El que viene en el repositorio se genera desde
+`data/journal-sample.csv` y es **ficticio**: sirve para ver la app con contenido y para
+documentar el formato.
+
+> ⚠️ **Tu bitácora es privada.** `tools/build_seed.py` escribe por omisión sobre
+> `journal_seed.json`, que sí está versionado. Si lo corres con tu archivo real, ese
+> archivo queda listo para entrar al repositorio. Usa `-o` para mandarlo a otro lado:
+>
+> ```bash
+> .venv/bin/python tools/build_seed.py mi-bitacora.csv -o /ruta/fuera/del/repo.json
+> ```
+>
+> O revisa `git status` antes de confirmar. Una vez subido, sacarlo exige reescribir la
+> historia.
 
 **CSV.** La bitácora se exporta y se importa en el formato original
 `fecha,emoción,evento`, así que abre en la misma hoja de cálculo de siempre. Importar
