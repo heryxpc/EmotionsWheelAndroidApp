@@ -51,7 +51,7 @@ class JournalViewModel(
                 totalCount = entries.size,
                 filters = active,
                 recentByFamily = summarize(entries),
-                recentCount = entries.count { !it.date.isBefore(thirtyDaysAgo()) },
+                recentCount = entries.count { !it.date.isBefore(summaryWindowStart()) },
                 loading = false,
             )
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), UiState())
@@ -60,9 +60,9 @@ class JournalViewModel(
         val entries: List<JournalEntry> = emptyList(),
         val totalCount: Int = 0,
         val filters: Filters = Filters(),
-        /** Counts per family over the last 30 days, for the summary bar. */
+        /** Counts per family over the summary window, for the stacked bar. */
         val recentByFamily: Map<EmotionFamily, Int> = emptyMap(),
-        /** Entries in the last 30 days. Lower than the sum of [recentByFamily]: one
+        /** Entries in the summary window. Lower than the sum of [recentByFamily]: one
          *  entry can name emotions from two families and shows up in both. */
         val recentCount: Int = 0,
         val loading: Boolean = true,
@@ -77,11 +77,11 @@ class JournalViewModel(
             labels.any { EmotionCatalog.normalize(it).contains(needle) }
     }
 
-    private fun thirtyDaysAgo(): LocalDate = LocalDate.now().minusDays(30)
+    private fun summaryWindowStart(): LocalDate = LocalDate.now().minusDays(SUMMARY_WINDOW_DAYS)
 
     private fun summarize(entries: List<JournalEntry>): Map<EmotionFamily, Int> =
         entries
-            .filter { !it.date.isBefore(thirtyDaysAgo()) }
+            .filter { !it.date.isBefore(summaryWindowStart()) }
             .flatMap { it.families }
             .groupingBy { it }
             .eachCount()
@@ -118,6 +118,11 @@ class JournalViewModel(
             _message.value =
                 if (ok) Message.Exported(entries.size) else Message.ExportFailed
         }
+    }
+
+    companion object {
+        /** The journal is kept week by week, so the bar summarizes a week. */
+        const val SUMMARY_WINDOW_DAYS = 7L
     }
 
     fun import(context: Context, source: Uri) {

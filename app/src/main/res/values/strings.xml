@@ -61,7 +61,7 @@
     <string name="journal_search_hint">Buscar en la bitácora…</string>
     <string name="journal_filter_all">Todas</string>
     <string name="journal_deleted">Registro borrado</string>
-    <string name="journal_summary_title">Últimos 30 días</string>
+    <string name="journal_summary_title">Últimos 7 días</string>
     <string name="journal_summary_count">%1$d registros</string>
     <string name="journal_entry_count">%1$d registros</string>
     <string name="journal_export">Exportar CSV</string>
