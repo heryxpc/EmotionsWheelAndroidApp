@@ -1,0 +1,725 @@
+{
+  "version": 1,
+  "emotions": [
+    {
+      "id": "sorpresa",
+      "label": "sorpresa",
+      "family": "SURPRISE",
+      "level": 1,
+      "index": 0,
+      "definition": "Alteración del ánimo por algo imprevisto. Todavía no es buena ni mala: solo rompe lo que esperabas."
+    },
+    {
+      "id": "conmocion",
+      "label": "conmoción",
+      "family": "SURPRISE",
+      "level": 2,
+      "index": 0,
+      "definition": "Sacudida fuerte del ánimo ante una noticia o un suceso que te deja sin reacción."
+    },
+    {
+      "id": "desorientacion",
+      "label": "desorientación",
+      "family": "SURPRISE",
+      "level": 2,
+      "index": 1,
+      "definition": "Perder el rumbo: ya no sabes dónde estás parado ni qué sigue."
+    },
+    {
+      "id": "deslumbramiento",
+      "label": "deslumbramiento",
+      "family": "SURPRISE",
+      "level": 2,
+      "index": 2,
+      "definition": "Quedar cegado por algo tan brillante o admirable que no ves nada más."
+    },
+    {
+      "id": "desconcierto",
+      "label": "desconcierto",
+      "family": "SURPRISE",
+      "level": 2,
+      "index": 3,
+      "definition": "No entender lo que pasa. Las cosas no salieron como las tenías previstas."
+    },
+    {
+      "id": "incredulidad",
+      "label": "incredulidad",
+      "family": "SURPRISE",
+      "level": 2,
+      "index": 4,
+      "definition": "No poder creer lo que ves o lo que oyes, aunque tengas la prueba delante."
+    },
+    {
+      "id": "estupefaccion",
+      "label": "estupefacción",
+      "family": "SURPRISE",
+      "level": 2,
+      "index": 5,
+      "definition": "Pasmo que te deja mudo e inmóvil. Es la sorpresa llevada al extremo."
+    },
+    {
+      "id": "expectativa",
+      "label": "expectativa",
+      "family": "SURPRISE",
+      "level": 2,
+      "index": 6,
+      "definition": "Esperar algo que va a pasar, con la atención puesta en ello y el ánimo suspendido."
+    },
+    {
+      "id": "intriga",
+      "label": "intriga",
+      "family": "SURPRISE",
+      "level": 3,
+      "index": 0,
+      "definition": "Inquietud curiosa por algo que se te oculta y quieres averiguar."
+    },
+    {
+      "id": "asombro",
+      "label": "asombro",
+      "family": "SURPRISE",
+      "level": 3,
+      "index": 1,
+      "definition": "Admiración grande ante algo que excede lo que creías posible."
+    },
+    {
+      "id": "fascinacion",
+      "label": "fascinación",
+      "family": "SURPRISE",
+      "level": 3,
+      "index": 2,
+      "definition": "Atracción irresistible: algo te atrapa la atención y no quieres soltarlo."
+    },
+    {
+      "id": "curiosidad",
+      "label": "curiosidad",
+      "family": "SURPRISE",
+      "level": 3,
+      "index": 3,
+      "definition": "Ganas de saber o averiguar. Es la sorpresa que abre puertas en vez de paralizar."
+    },
+    {
+      "id": "admiracion",
+      "label": "admiración",
+      "family": "SURPRISE",
+      "level": 3,
+      "index": 4,
+      "definition": "Reconocer con gusto el valor o el mérito de algo o de alguien."
+    },
+    {
+      "id": "extraneza",
+      "label": "extrañeza",
+      "family": "SURPRISE",
+      "level": 3,
+      "index": 5,
+      "definition": "Sensación de rareza ante algo que no encaja con lo habitual."
+    },
+    {
+      "id": "entusiasmo",
+      "label": "entusiasmo",
+      "family": "SURPRISE",
+      "level": 3,
+      "index": 6,
+      "definition": "Exaltación alegre que te impulsa a hacer algo con ganas."
+    },
+    {
+      "id": "enojo",
+      "label": "enojo",
+      "family": "ANGER",
+      "level": 1,
+      "index": 0,
+      "definition": "Movimiento del ánimo contra algo que consideras injusto, molesto o que te estorba."
+    },
+    {
+      "id": "frustracion",
+      "label": "frustración",
+      "family": "ANGER",
+      "level": 2,
+      "index": 0,
+      "definition": "Malestar por no lograr lo que te habías propuesto o porque algo te lo impide."
+    },
+    {
+      "id": "resentimiento",
+      "label": "resentimiento",
+      "family": "ANGER",
+      "level": 2,
+      "index": 1,
+      "definition": "Enojo guardado por un agravio que no se cerró. Sigue vivo tiempo después."
+    },
+    {
+      "id": "indignacion",
+      "label": "indignación",
+      "family": "ANGER",
+      "level": 2,
+      "index": 2,
+      "definition": "Enojo ante algo injusto o indigno, más allá de si te afecta a ti."
+    },
+    {
+      "id": "impaciencia",
+      "label": "impaciencia",
+      "family": "ANGER",
+      "level": 2,
+      "index": 3,
+      "definition": "Falta de paciencia: la espera se te vuelve insoportable."
+    },
+    {
+      "id": "hostilidad",
+      "label": "hostilidad",
+      "family": "ANGER",
+      "level": 2,
+      "index": 4,
+      "definition": "Disposición a atacar o a tratar a alguien como enemigo."
+    },
+    {
+      "id": "impotencia",
+      "label": "impotencia",
+      "family": "ANGER",
+      "level": 2,
+      "index": 5,
+      "definition": "Rabia de no poder hacer nada para cambiar lo que te afecta."
+    },
+    {
+      "id": "exasperacion",
+      "label": "exasperación",
+      "family": "ANGER",
+      "level": 2,
+      "index": 6,
+      "definition": "Enojo llevado al límite por algo que se repite y no cede."
+    },
+    {
+      "id": "rabia",
+      "label": "rabia",
+      "family": "ANGER",
+      "level": 3,
+      "index": 0,
+      "definition": "Enojo intenso y descontrolado, con ganas de descargarlo."
+    },
+    {
+      "id": "furia",
+      "label": "furia",
+      "family": "ANGER",
+      "level": 3,
+      "index": 1,
+      "definition": "Rabia desatada que arrasa con el juicio."
+    },
+    {
+      "id": "ira",
+      "label": "ira",
+      "family": "ANGER",
+      "level": 3,
+      "index": 2,
+      "definition": "Enojo violento que empuja a la agresión."
+    },
+    {
+      "id": "odio",
+      "label": "odio",
+      "family": "ANGER",
+      "level": 3,
+      "index": 3,
+      "definition": "Aversión profunda y sostenida hacia alguien, con deseo de su mal."
+    },
+    {
+      "id": "disgusto",
+      "label": "disgusto",
+      "family": "ANGER",
+      "level": 3,
+      "index": 4,
+      "definition": "Molestia o desagrado por algo que te contraría."
+    },
+    {
+      "id": "irritacion",
+      "label": "irritación",
+      "family": "ANGER",
+      "level": 3,
+      "index": 5,
+      "definition": "Enfado ligero pero persistente, como una piedra en el zapato."
+    },
+    {
+      "id": "rencor",
+      "label": "rencor",
+      "family": "ANGER",
+      "level": 3,
+      "index": 6,
+      "definition": "Resentimiento arraigado que se guarda y no se perdona."
+    },
+    {
+      "id": "alegria",
+      "label": "alegría",
+      "family": "JOY",
+      "level": 1,
+      "index": 0,
+      "definition": "Sentimiento grato que nace de algo bueno y se nota por fuera."
+    },
+    {
+      "id": "esperanza",
+      "label": "esperanza",
+      "family": "JOY",
+      "level": 2,
+      "index": 0,
+      "definition": "Confianza en que lo que deseas todavía puede llegar a ocurrir."
+    },
+    {
+      "id": "optimismo",
+      "label": "optimismo",
+      "family": "JOY",
+      "level": 2,
+      "index": 1,
+      "definition": "Ver el lado favorable de las cosas y esperar que salgan bien."
+    },
+    {
+      "id": "conexion",
+      "label": "conexión",
+      "family": "JOY",
+      "level": 2,
+      "index": 2,
+      "definition": "Sentirte unido a alguien y correspondido en ese vínculo."
+    },
+    {
+      "id": "satisfaccion",
+      "label": "satisfacción",
+      "family": "JOY",
+      "level": 2,
+      "index": 3,
+      "definition": "Gusto por haber cumplido algo o porque se colmó lo que querías."
+    },
+    {
+      "id": "vitalidad",
+      "label": "vitalidad",
+      "family": "JOY",
+      "level": 2,
+      "index": 4,
+      "definition": "Energía y empuje para hacer y para sostener la actividad."
+    },
+    {
+      "id": "inspiracion",
+      "label": "inspiración",
+      "family": "JOY",
+      "level": 2,
+      "index": 5,
+      "definition": "Impulso creador: de pronto sabes qué hacer y con qué ánimo."
+    },
+    {
+      "id": "ternura",
+      "label": "ternura",
+      "family": "JOY",
+      "level": 2,
+      "index": 6,
+      "definition": "Cariño suave y delicado hacia alguien a quien quieres cuidar."
+    },
+    {
+      "id": "paz",
+      "label": "paz",
+      "family": "JOY",
+      "level": 3,
+      "index": 0,
+      "definition": "Ausencia de conflicto por dentro y por fuera. Nada te está peleando."
+    },
+    {
+      "id": "calma",
+      "label": "calma",
+      "family": "JOY",
+      "level": 3,
+      "index": 1,
+      "definition": "Quietud del ánimo: la agitación bajó."
+    },
+    {
+      "id": "gratitud",
+      "label": "gratitud",
+      "family": "JOY",
+      "level": 3,
+      "index": 2,
+      "definition": "Reconocimiento y aprecio por un bien recibido."
+    },
+    {
+      "id": "gozo",
+      "label": "gozo",
+      "family": "JOY",
+      "level": 3,
+      "index": 3,
+      "definition": "Alegría honda y sostenida, no un simple buen rato."
+    },
+    {
+      "id": "alivio",
+      "label": "alivio",
+      "family": "JOY",
+      "level": 3,
+      "index": 4,
+      "definition": "Descanso que sigue al fin de una molestia, un dolor o una espera."
+    },
+    {
+      "id": "dicha",
+      "label": "dicha",
+      "family": "JOY",
+      "level": 3,
+      "index": 5,
+      "definition": "Felicidad afortunada: la sensación de que la vida te salió bien."
+    },
+    {
+      "id": "serenidad",
+      "label": "serenidad",
+      "family": "JOY",
+      "level": 3,
+      "index": 6,
+      "definition": "Calma firme que se sostiene aunque alrededor haya movimiento."
+    },
+    {
+      "id": "miedo",
+      "label": "miedo",
+      "family": "FEAR",
+      "level": 1,
+      "index": 0,
+      "definition": "Angustia ante un peligro real o imaginado, presente o por venir."
+    },
+    {
+      "id": "inquietud",
+      "label": "inquietud",
+      "family": "FEAR",
+      "level": 2,
+      "index": 0,
+      "definition": "Desasosiego leve: algo te mueve el ánimo y no te deja estar quieto."
+    },
+    {
+      "id": "desesperacion",
+      "label": "desesperación",
+      "family": "FEAR",
+      "level": 2,
+      "index": 1,
+      "definition": "Pérdida total de la esperanza: el miedo sin salida a la vista."
+    },
+    {
+      "id": "desconfianza",
+      "label": "desconfianza",
+      "family": "FEAR",
+      "level": 2,
+      "index": 2,
+      "definition": "Sospecha de que algo o alguien va a fallarte."
+    },
+    {
+      "id": "vulnerabilidad",
+      "label": "vulnerabilidad",
+      "family": "FEAR",
+      "level": 2,
+      "index": 3,
+      "definition": "Sentirte expuesto y sin defensa ante lo que pueda venir."
+    },
+    {
+      "id": "inseguridad",
+      "label": "inseguridad",
+      "family": "FEAR",
+      "level": 2,
+      "index": 4,
+      "definition": "Falta de confianza en ti o en lo que sostiene la situación."
+    },
+    {
+      "id": "aprension",
+      "label": "aprensión",
+      "family": "FEAR",
+      "level": 2,
+      "index": 5,
+      "definition": "Recelo anticipado por algo que va a pasar y temes que salga mal."
+    },
+    {
+      "id": "ansiedad",
+      "label": "ansiedad",
+      "family": "FEAR",
+      "level": 2,
+      "index": 6,
+      "definition": "Agitación por un peligro difuso, muchas veces sin objeto claro."
+    },
+    {
+      "id": "panico",
+      "label": "pánico",
+      "family": "FEAR",
+      "level": 3,
+      "index": 0,
+      "definition": "Miedo súbito y arrollador que anula la capacidad de pensar."
+    },
+    {
+      "id": "recelo",
+      "label": "recelo",
+      "family": "FEAR",
+      "level": 3,
+      "index": 1,
+      "definition": "Desconfianza sorda que te mantiene en guardia."
+    },
+    {
+      "id": "paralisis",
+      "label": "parálisis",
+      "family": "FEAR",
+      "level": 3,
+      "index": 2,
+      "definition": "Quedarte inmóvil por miedo, sin poder actuar ni decidir."
+    },
+    {
+      "id": "pavor",
+      "label": "pavor",
+      "family": "FEAR",
+      "level": 3,
+      "index": 3,
+      "definition": "Miedo con espanto, que eriza el cuerpo."
+    },
+    {
+      "id": "temor",
+      "label": "temor",
+      "family": "FEAR",
+      "level": 3,
+      "index": 4,
+      "definition": "Miedo moderado y concreto: sabes exactamente qué te preocupa."
+    },
+    {
+      "id": "terror",
+      "label": "terror",
+      "family": "FEAR",
+      "level": 3,
+      "index": 5,
+      "definition": "Miedo extremo que domina el cuerpo entero."
+    },
+    {
+      "id": "angustia",
+      "label": "angustia",
+      "family": "FEAR",
+      "level": 3,
+      "index": 6,
+      "definition": "Aflicción apretada en el pecho, con miedo difuso y pena mezclados."
+    },
+    {
+      "id": "tristeza",
+      "label": "tristeza",
+      "family": "SADNESS",
+      "level": 1,
+      "index": 0,
+      "definition": "Pesar del ánimo por una pérdida o por algo que duele."
+    },
+    {
+      "id": "nostalgia",
+      "label": "nostalgia",
+      "family": "SADNESS",
+      "level": 2,
+      "index": 0,
+      "definition": "Pena dulce por algo o alguien que quedó atrás y extrañas."
+    },
+    {
+      "id": "desilusion",
+      "label": "desilusión",
+      "family": "SADNESS",
+      "level": 2,
+      "index": 1,
+      "definition": "Pérdida de la ilusión que habías puesto en algo o en alguien."
+    },
+    {
+      "id": "desamparo",
+      "label": "desamparo",
+      "family": "SADNESS",
+      "level": 2,
+      "index": 2,
+      "definition": "Sentirte solo y sin protección ni ayuda de nadie."
+    },
+    {
+      "id": "desesperanza",
+      "label": "desesperanza",
+      "family": "SADNESS",
+      "level": 2,
+      "index": 3,
+      "definition": "Convicción de que ya no va a mejorar: la esperanza se apagó."
+    },
+    {
+      "id": "pesadumbre",
+      "label": "pesadumbre",
+      "family": "SADNESS",
+      "level": 2,
+      "index": 4,
+      "definition": "Peso del ánimo por algo que te aflige y no se va."
+    },
+    {
+      "id": "melancolia",
+      "label": "melancolía",
+      "family": "SADNESS",
+      "level": 2,
+      "index": 5,
+      "definition": "Tristeza vaga y sostenida, sin causa que puedas señalar."
+    },
+    {
+      "id": "desolacion",
+      "label": "desolación",
+      "family": "SADNESS",
+      "level": 2,
+      "index": 6,
+      "definition": "Tristeza extrema, con sensación de haberlo perdido todo."
+    },
+    {
+      "id": "desdicha",
+      "label": "desdicha",
+      "family": "SADNESS",
+      "level": 3,
+      "index": 0,
+      "definition": "Desgracia: la sensación de que la suerte está en tu contra."
+    },
+    {
+      "id": "decepcion",
+      "label": "decepción",
+      "family": "SADNESS",
+      "level": 3,
+      "index": 1,
+      "definition": "Pesar porque el resultado no correspondió a lo prometido o merecido."
+    },
+    {
+      "id": "vacio",
+      "label": "vacío",
+      "family": "SADNESS",
+      "level": 3,
+      "index": 2,
+      "definition": "Ausencia de sentido o de contenido: nada te llena ni te importa."
+    },
+    {
+      "id": "amargura",
+      "label": "amargura",
+      "family": "SADNESS",
+      "level": 3,
+      "index": 3,
+      "definition": "Tristeza con resabio de rencor por lo que la vida te quitó."
+    },
+    {
+      "id": "desanimo",
+      "label": "desánimo",
+      "family": "SADNESS",
+      "level": 3,
+      "index": 4,
+      "definition": "Falta de ánimo para emprender o para continuar."
+    },
+    {
+      "id": "apatia",
+      "label": "apatía",
+      "family": "SADNESS",
+      "level": 3,
+      "index": 5,
+      "definition": "Indiferencia: nada te mueve, ni lo bueno ni lo malo."
+    },
+    {
+      "id": "soledad",
+      "label": "soledad",
+      "family": "SADNESS",
+      "level": 3,
+      "index": 6,
+      "definition": "Pena de estar sin compañía o de no sentirte acompañado."
+    },
+    {
+      "id": "asco",
+      "label": "asco",
+      "family": "DISGUST",
+      "level": 1,
+      "index": 0,
+      "definition": "Repugnancia ante algo que te resulta intolerable y te hace apartarte."
+    },
+    {
+      "id": "repugnancia",
+      "label": "repugnancia",
+      "family": "DISGUST",
+      "level": 2,
+      "index": 0,
+      "definition": "Aversión física fuerte: el cuerpo entero se niega."
+    },
+    {
+      "id": "saturacion",
+      "label": "saturación",
+      "family": "DISGUST",
+      "level": 2,
+      "index": 1,
+      "definition": "Hartazgo por exceso: ya no cabe más de lo mismo."
+    },
+    {
+      "id": "incomodidad",
+      "label": "incomodidad",
+      "family": "DISGUST",
+      "level": 2,
+      "index": 2,
+      "definition": "Malestar leve: algo no está bien y no te deja acomodarte."
+    },
+    {
+      "id": "disconformidad",
+      "label": "disconformidad",
+      "family": "DISGUST",
+      "level": 2,
+      "index": 3,
+      "definition": "No estar de acuerdo con cómo son o cómo se hicieron las cosas."
+    },
+    {
+      "id": "desagrado",
+      "label": "desagrado",
+      "family": "DISGUST",
+      "level": 2,
+      "index": 4,
+      "definition": "Disgusto suave por algo que sencillamente no te gusta."
+    },
+    {
+      "id": "repulsion",
+      "label": "repulsión",
+      "family": "DISGUST",
+      "level": 2,
+      "index": 5,
+      "definition": "Rechazo que te empuja a alejarte de inmediato."
+    },
+    {
+      "id": "desprecio",
+      "label": "desprecio",
+      "family": "DISGUST",
+      "level": 2,
+      "index": 6,
+      "definition": "Tener a alguien o algo por indigno de tu estima o de tu atención."
+    },
+    {
+      "id": "aversion",
+      "label": "aversión",
+      "family": "DISGUST",
+      "level": 3,
+      "index": 0,
+      "definition": "Rechazo arraigado que te hace evitar algo por sistema."
+    },
+    {
+      "id": "rechazo",
+      "label": "rechazo",
+      "family": "DISGUST",
+      "level": 3,
+      "index": 1,
+      "definition": "Negarte a admitir o a aceptar algo."
+    },
+    {
+      "id": "fastidio",
+      "label": "fastidio",
+      "family": "DISGUST",
+      "level": 3,
+      "index": 2,
+      "definition": "Molestia menor pero insistente que te agota la paciencia."
+    },
+    {
+      "id": "desden",
+      "label": "desdén",
+      "family": "DISGUST",
+      "level": 3,
+      "index": 3,
+      "definition": "Indiferencia despectiva: ni siquiera merece tu atención."
+    },
+    {
+      "id": "repudio",
+      "label": "repudio",
+      "family": "DISGUST",
+      "level": 3,
+      "index": 4,
+      "definition": "Rechazo declarado y público de algo que condenas."
+    },
+    {
+      "id": "antipatia",
+      "label": "antipatía",
+      "family": "DISGUST",
+      "level": 3,
+      "index": 5,
+      "definition": "Aversión instintiva hacia alguien, sin motivo que puedas explicar."
+    },
+    {
+      "id": "hastio",
+      "label": "hastío",
+      "family": "DISGUST",
+      "level": 3,
+      "index": 6,
+      "definition": "Cansancio profundo de algo que se repite hasta el hartazgo."
+    }
+  ]
+}

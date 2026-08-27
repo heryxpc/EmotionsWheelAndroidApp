@@ -1,0 +1,131 @@
+{
+  "version": 1,
+  "entries": [
+    {
+      "id": "eb42188b-5ced-ef4a-6876-311f396ecd89",
+      "date": "2026-06-02",
+      "emotionIds": [
+        "alivio"
+      ],
+      "customEmotion": null,
+      "situation": "Terminé un pendiente que llevaba semanas posponiendo"
+    },
+    {
+      "id": "31151547-03f4-de8a-3b28-0488deb0db7c",
+      "date": "2026-06-02",
+      "emotionIds": [
+        "frustracion"
+      ],
+      "customEmotion": null,
+      "situation": "El trámite pedía un documento que nadie me había mencionado"
+    },
+    {
+      "id": "34f9c012-ae57-0220-428b-395a91f2f12e",
+      "date": "2026-06-03",
+      "emotionIds": [
+        "gratitud"
+      ],
+      "customEmotion": null,
+      "situation": "Alguien me echó una mano sin que se lo pidiera"
+    },
+    {
+      "id": "37f377a9-09de-b9cc-ce8a-015aa3846b2c",
+      "date": "2026-06-03",
+      "emotionIds": [
+        "ansiedad"
+      ],
+      "customEmotion": null,
+      "situation": "Varias entregas la misma semana y no sé por dónde empezar"
+    },
+    {
+      "id": "30cd1c62-748b-a1ed-7d82-c4c65c48a78b",
+      "date": "2026-06-04",
+      "emotionIds": [
+        "enojo",
+        "impaciencia"
+      ],
+      "customEmotion": null,
+      "situation": "Se canceló la reunión después de que reorganicé el día entero"
+    },
+    {
+      "id": "4533bca5-ddcb-8031-18f6-154c6b6a2e73",
+      "date": "2026-06-04",
+      "emotionIds": [
+        "curiosidad"
+      ],
+      "customEmotion": null,
+      "situation": "Empecé un libro sobre un tema que no conocía"
+    },
+    {
+      "id": "56290f26-4e4a-0783-fed0-7a25e2b2f42b",
+      "date": "2026-06-05",
+      "emotionIds": [],
+      "customEmotion": "vergüenza",
+      "situation": "Confundí un nombre delante de todo el grupo"
+    },
+    {
+      "id": "ff4c7bfc-7b79-427a-7f59-101bca46122b",
+      "date": "2026-06-05",
+      "emotionIds": [
+        "satisfaccion"
+      ],
+      "customEmotion": null,
+      "situation": "Salió bien una presentación que había ensayado mucho"
+    },
+    {
+      "id": "5b022c2d-e87e-f246-91a6-183164d8970f",
+      "date": "2026-06-06",
+      "emotionIds": [
+        "incomodidad",
+        "saturacion"
+      ],
+      "customEmotion": null,
+      "situation": "Demasiadas notificaciones y ninguna urgente"
+    },
+    {
+      "id": "f0f51d91-7e16-480c-7f85-16aa53a14133",
+      "date": "2026-06-06",
+      "emotionIds": [
+        "calma"
+      ],
+      "customEmotion": null,
+      "situation": "Caminé de regreso sin prisa y sin auriculares"
+    },
+    {
+      "id": "a123fb20-647b-d48d-1345-ed7e3f05203a",
+      "date": "2026-06-07",
+      "emotionIds": [
+        "nostalgia"
+      ],
+      "customEmotion": null,
+      "situation": "Encontré fotos de un viaje de hace años"
+    },
+    {
+      "id": "ed667267-50e0-0943-7013-0bd29ebbb716",
+      "date": "2026-06-07",
+      "emotionIds": [
+        "desanimo"
+      ],
+      "customEmotion": "indiferencia",
+      "situation": "Un día entero sin que nada me moviera, ni bueno ni malo"
+    },
+    {
+      "id": "2784d45b-60f8-18db-a3e7-810ac737528c",
+      "date": "2026-06-08",
+      "emotionIds": [
+        "decepcion"
+      ],
+      "customEmotion": null,
+      "situation": "Preparé todo, avisé a todos, y al final el plan no se concretó"
+    },
+    {
+      "id": "d61c4294-0f80-ff26-4ccd-c6134f3c7c62",
+      "date": "2026-06-08",
+      "emotionIds": [
+        "esperanza"
+      ],
+      "customEmotion": null,
+      "situation": "Una conversación pendiente resultó más fácil de lo que temía"
+    }
+  ]
+}
