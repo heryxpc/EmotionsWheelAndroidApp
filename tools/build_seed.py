@@ -34,7 +34,7 @@ from datetime import date
 import click
 
 REPO_ROOT = pathlib.Path(__file__).resolve().parent.parent
-DEFAULT_SOURCE = pathlib.Path.home() / "Downloads" / "Bitácora emociones.csv"
+DEFAULT_SOURCE = REPO_ROOT / "data" / "journal-sample.csv"
 DEFAULT_OUTPUT = REPO_ROOT / "app" / "src" / "main" / "assets" / "journal_seed.json"
 DEFAULT_CATALOG = REPO_ROOT / "app" / "src" / "main" / "assets" / "emotions.json"
 
