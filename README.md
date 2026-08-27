@@ -144,7 +144,7 @@ línea.
 **Bitácora de precarga** — cualquier CSV con columnas `fecha,emoción,evento`.
 
 ```bash
-.venv/bin/python tools/build_seed.py "ruta/al/Bitácora emociones.csv"
+.venv/bin/python tools/build_seed.py "ruta/a/BitacoraEmociones.csv"
 .venv/bin/python tools/build_seed.py bitacora.csv --check
 .venv/bin/python tools/build_seed.py bitacora.csv --strict   # falla si omite filas
 ```

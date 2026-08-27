@@ -14,9 +14,9 @@ import java.io.File
 import java.time.LocalDate
 
 /**
- * The reader has to survive the real file, which is why these cases are reproduce the shapes such a
+ * The reader has to survive a hand-kept file, so these cases reproduce the shapes such a
  * file takes: several emotions in one cell, quoted text with commas, names the wheel
- * does not have, and dates typed with a doubled slash. The wording is invented.
+ * does not have, and dates typed with a doubled slash. Every row here is invented.
  */
 class JournalCsvTest {
 
