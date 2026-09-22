@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Ruleta de Emociones</string>
+
+    <!-- Navigation -->
+    <string name="nav_wheel">Ruleta</string>
+    <string name="nav_journal">Bitácora</string>
+    <string name="nav_settings">Ajustes</string>
+    <string name="action_back">Volver</string>
+    <string name="action_close">Cerrar</string>
+    <string name="action_cancel">Cancelar</string>
+    <string name="action_save">Guardar</string>
+    <string name="action_delete">Borrar</string>
+    <string name="action_edit">Editar</string>
+    <string name="action_undo">Deshacer</string>
+    <string name="action_ok">Aceptar</string>
+
+    <!-- Emotion families -->
+    <string name="family_surprise">Sorpresa</string>
+    <string name="family_anger">Enojo</string>
+    <string name="family_joy">Alegría</string>
+    <string name="family_fear">Miedo</string>
+    <string name="family_sadness">Tristeza</string>
+    <string name="family_disgust">Asco</string>
+    <string name="family_none">Sin familia</string>
+
+    <!-- Wheel screen -->
+    <string name="wheel_title">¿Qué estás sintiendo?</string>
+    <string name="wheel_subtitle">Toca para elegir. Gírala con un dedo, acércala con dos.</string>
+    <string name="wheel_search_hint">Buscar emoción…</string>
+    <string name="wheel_search_empty">Ninguna emoción coincide con «%1$s»</string>
+    <string name="wheel_hint_tap">Toca cualquier palabra de la rueda</string>
+    <string name="wheel_action_log">Registrar esto</string>
+    <string name="wheel_action_dismiss">Ver otra</string>
+    <string name="wheel_family_sheet_title">%1$s — 15 matices</string>
+    <string name="wheel_content_description">Rueda de emociones con seis familias y noventa emociones</string>
+    <string name="wheel_reset_zoom">Restablecer zoom</string>
+    <string name="wheel_selected_announcement">%1$s seleccionada</string>
+
+    <!-- Entry screen -->
+    <string name="entry_title_new">Nuevo registro</string>
+    <string name="entry_title_edit">Editar registro</string>
+    <string name="entry_date_label">Fecha</string>
+    <string name="entry_date_pick">Elegir fecha</string>
+    <string name="entry_emotions_label">Emoción</string>
+    <string name="entry_emotions_add">Añadir otra</string>
+    <string name="entry_emotions_remove">Quitar %1$s</string>
+    <string name="entry_emotions_empty">Elige al menos una emoción</string>
+    <string name="entry_custom_label">Otra emoción (texto libre)</string>
+    <string name="entry_situation_label">¿Qué pasó?</string>
+    <string name="entry_situation_hint">Describe la situación que derivó en esta emoción</string>
+    <string name="entry_situation_empty">Escribe qué pasó</string>
+    <string name="entry_saved">Registro guardado</string>
+
+    <!-- Journal screen -->
+    <string name="journal_title">Bitácora</string>
+    <string name="journal_empty_title">Tu bitácora está vacía</string>
+    <string name="journal_empty_body">Elige una emoción en la ruleta para hacer tu primer registro.</string>
+    <string name="journal_empty_filtered_title">Ningún registro coincide</string>
+    <string name="journal_empty_filtered">Prueba con otra familia o borra la búsqueda.</string>
+    <string name="journal_search_hint">Buscar en la bitácora…</string>
+    <string name="journal_filter_all">Todas</string>
+    <string name="journal_deleted">Registro borrado</string>
+    <string name="journal_summary_title">Últimos 7 días</string>
+    <string name="journal_summary_count">%1$d registros</string>
+    <string name="journal_entry_count">%1$d registros</string>
+    <string name="journal_export">Exportar CSV</string>
+    <string name="journal_import">Importar CSV</string>
+    <string name="journal_export_done">Se exportaron %1$d registros</string>
+    <string name="journal_export_failed">No se pudo exportar el archivo</string>
+    <string name="journal_import_done">Se importaron %1$d registros nuevos (%2$d repetidos, omitidos)</string>
+    <string name="journal_import_failed">No se pudo leer el CSV</string>
+    <string name="journal_new_entry">Nuevo registro</string>
+    <string name="journal_delete_confirm_title">¿Borrar este registro?</string>
+    <string name="journal_delete_confirm_body">Esta acción no se puede deshacer una vez que cierres la app.</string>
+
+    <!-- Settings screen -->
+    <string name="settings_title">Ajustes</string>
+    <string name="settings_backup_section">Respaldo en la nube</string>
+    <string name="settings_backup_toggle">Respaldar en la nube</string>
+    <string name="settings_backup_description">Guarda una copia de tu bitácora en Firebase. Solo tú puedes leerla.</string>
+    <string name="settings_backup_unavailable">Firebase no está configurado en esta compilación. Revisa docs/firebase-setup.md.</string>
+    <string name="settings_sync_now">Sincronizar ahora</string>
+    <string name="settings_sync_never">Nunca sincronizado</string>
+    <string name="settings_sync_last">Última sincronización: %1$s</string>
+    <string name="settings_sync_pending">%1$d registros pendientes de subir</string>
+    <string name="settings_sync_running">Sincronizando…</string>
+    <string name="settings_sync_failed">Falló la sincronización: %1$s</string>
+    <string name="settings_data_section">Datos</string>
+    <string name="settings_about_section">Acerca de</string>
+    <string name="settings_about_body">Taxonomía de emociones basada en la rueda de Casa Therapévo. Definiciones apoyadas en el Diccionario de la lengua española (RAE).</string>
+</resources>

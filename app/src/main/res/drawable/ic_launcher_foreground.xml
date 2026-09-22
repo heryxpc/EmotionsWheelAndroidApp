@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+
+    <!-- Six wedges arranged clockwise from the top, one per emotion family. -->
+    <path android:fillColor="#E8862F" android:pathData="M54,54 L54,24 A30,30 0 0,1 79.98,39 Z" />
+    <path android:fillColor="#D74C48" android:pathData="M54,54 L79.98,39 A30,30 0 0,1 79.98,69 Z" />
+    <path android:fillColor="#E8C24A" android:pathData="M54,54 L79.98,69 A30,30 0 0,1 54,84 Z" />
+    <path android:fillColor="#7C6BAE" android:pathData="M54,54 L54,84 A30,30 0 0,1 28.02,69 Z" />
+    <path android:fillColor="#5B8CC4" android:pathData="M54,54 L28.02,69 A30,30 0 0,1 28.02,39 Z" />
+    <path android:fillColor="#4E9E63" android:pathData="M54,54 L28.02,39 A30,30 0 0,1 54,24 Z" />
+
+    <!-- Hub -->
+    <path android:fillColor="#FFFFFF" android:pathData="M54,44 A10,10 0 1,1 53.99,44 Z" />
+</vector>
